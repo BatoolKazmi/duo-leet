@@ -76,3 +76,11 @@ body {
     @apply bg-background text-foreground;
   }
 }
+@font-face {
+  font-family: 'Feather Bold';
+  src: url('/fonts/feather-bold.woff2') format('woff2'),
+       url('/fonts/feather-bold.woff') format('woff'),
+       url('/fonts/feather-bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
