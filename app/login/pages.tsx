@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "../../context/AuthContext"; // Adjust path if needed
+import { useAuth } from "../context/AuthContext"; // Adjust path if needed
 
 export default function Login() {
   const { signIn } = useAuth();

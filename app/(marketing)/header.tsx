@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "../context/AuthContext";
-import Login from "./login/pages";
+import Login from "../login/pages";
 import { Button } from "@/components/ui/button";
 
 export const Header = () => {
@@ -18,9 +18,11 @@ export const Header = () => {
           Duo-leet
         </h1>
       </header>
-      <Button size="lg" variant="secondary" onClick={logOut}>
-        Sign out
-      </Button>
+      <div>
+        <Button size="lg" variant="secondary" onClick={logOut}>
+          Log out
+        </Button>
+      </div>
     </div>
   );
 };
