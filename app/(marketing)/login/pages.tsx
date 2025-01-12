@@ -22,13 +22,12 @@ export default function Login() {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="p-8 bg-white rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl mb-4">Login</h2>
+        <h2 className="font-feather text-2xl mb-4">Login</h2>
         <Button
           onClick={handleLogin}
           size="lg"
           variant="secondary"
-          className="w-full"
-        >
+          className = "w-full font-feather bg-yellow-500 border-yellow-700 hover:bg-yellow-700 hover:border-yellow-700">
           Login with Google
         </Button>
       </div>
