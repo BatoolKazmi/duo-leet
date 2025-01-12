@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "../context/AuthContext";
-import Login from "../login/pages";
+import Login from "./login/pages";
 import { Button } from "@/components/ui/button";
 
 export const Header = () => {
