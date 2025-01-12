@@ -151,7 +151,7 @@ const Quiz = () => {
             }}
           ></div>
         </div>
-        <h1 className="text-3xl font-semibold text-center mb-6">
+        <h1 className="font-feather text-3xl font-semibold text-center mb-6">
           {currentQuestion.question}
         </h1>
         <ul className="grid grid-cols-2 gap-4">
@@ -167,7 +167,7 @@ const Quiz = () => {
               <li key={key} className="flex justify-center">
                 <label
                   htmlFor={key}
-                  className={`block w-full p-4 text-center text-lg font-medium border rounded-lg cursor-pointer ${
+                  className={`font-feather block w-full p-4 text-center text-lg font-medium border rounded-lg cursor-pointer ${
                     isCorrect
                       ? "bg-green-500 text-white border-green-600"
                       : isIncorrect
@@ -210,10 +210,12 @@ const Quiz = () => {
         </Button>
 
         {feedback && (
-          <p className="mt-4 text-center text-xl font-semibold">{feedback}</p>
+          <p className="font-feather mt-4 text-center text-xl font-semibold">
+            {feedback}
+          </p>
         )}
 
-        <div className="mt-4 text-center">
+        <div className="font-feather mt-4 text-center">
           <p>
             Question {currentIndex + 1} of {questions.length}
           </p>
