@@ -13,14 +13,14 @@ export const Header = () => {
 
   return (
     <div>
-      <header className="h-20 w-full border-b-2 border-slate-200 px-4">
-        <h1 className=" font-feather text-2xl font-extrabold text-green-600 tracking-wide">
+      <header className="h-20 w-full border-b-2 border-slate-200 px-4 flex justify-between items-center">
+        <h1 className="font-feather text-2xl font-extrabold text-green-600 tracking-wide">
           Duo-leet
         </h1>
+        <Button size="lg" variant="secondary" onClick={logOut}>
+          Log out
+        </Button>
       </header>
-      <Button size="lg" variant="secondary" onClick={logOut}>
-        Sign out
-      </Button>
     </div>
   );
 };
