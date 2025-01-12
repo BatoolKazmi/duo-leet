@@ -8,8 +8,10 @@ export default function Home() {
           Learn, practice, and master new concepts and languages with Duoleet.
         </h1>
       </div>
-      <Link href="/quiz">
-        <Button size="lg" variant="secondary" className=" font-feather w-full">
+
+      {/* Wrap the Link component around the Button component */}
+      <Link href="/dropdownmenu">
+        <Button size="lg" variant="secondary" className="font-feather w-full">
           Get Started
         </Button>
       </Link>
