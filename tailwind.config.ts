@@ -51,6 +51,9 @@ const config: Config = {
   				'5': 'hsl(var(--chart-5))'
   			}
   		},
+		  fontFamily: {
+			feather: ['Feather Bold', 'sans-serif'], // Replace 'Feather Bold' with your font name
+		  },	
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
