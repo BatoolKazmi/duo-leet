@@ -8,7 +8,7 @@ export default function Home() {
           Learn, practice, and master new concepts and languages with Duoleet.
         </h1>
       </div>
-      <Link href="/buttons">
+      <Link href="/quiz">
         <Button size="lg" variant="secondary" className=" font-feather w-full">
           Get Started
         </Button>
