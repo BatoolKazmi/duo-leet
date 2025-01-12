@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Button } from "@/components/ui/button";
 
 interface Question {
   id: number;
@@ -36,13 +37,17 @@ const Quiz = () => {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [score, setScore] = useState<number>(0);
 
-  // Fetch quiz questions from the API
   useEffect(() => {
     async function fetchQuestions() {
       try {
-        const response = await axios.get<Question[]>(
-          "https://quizapi.io/api/v1/questions?apiKey=tGHwyiVvrEfmpwAaOfl6ND8pJ5ws2vgbo9XbtTJy&limit=20"
-        );
+        const apiUrl = process.env.NEXT_PUBLIC_QUIZ_API_KEY;
+        if (!apiUrl) {
+          throw new Error(
+            "API URL is not defined in the environment variables."
+          );
+        }
+
+        const response = await axios.get<Question[]>(apiUrl);
         setQuestions(response.data);
       } catch (error) {
         console.error("Error fetching quiz data:", error);
@@ -98,21 +103,39 @@ const Quiz = () => {
     );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Quiz: {currentQuestion.question}</h1>
-      {currentQuestion.description && <p>{currentQuestion.description}</p>}
-      <ul>
+    <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-lg">
+      {/* Progression Bar */}
+      <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-6">
+        <div
+          className="h-full bg-green-500"
+          style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
+        ></div>
+      </div>
+      {/* Questions and answers */}
+      <h1 className="text-3xl font-semibold text-center mb-6">
+        {currentQuestion.question}
+      </h1>
+      <ul className="grid grid-cols-2 gap-4">
         {Object.entries(currentQuestion.answers).map(([key, answer]) => {
           if (!answer) return null; // Skip null answers
           return (
-            <li key={key}>
-              <label>
+            <li key={key} className="flex justify-center">
+              <label
+                htmlFor={key}
+                className={`block w-full p-4 text-center text-lg font-medium border rounded-lg cursor-pointer ${
+                  selectedAnswer === key
+                    ? "bg-green-500 text-white border-green-600"
+                    : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+                }`}
+              >
                 <input
                   type="radio"
+                  id={key}
                   name="answer"
                   value={key}
                   checked={selectedAnswer === key}
                   onChange={() => setSelectedAnswer(key)}
+                  className="hidden"
                 />
                 {answer}
               </label>
@@ -120,13 +143,30 @@ const Quiz = () => {
           );
         })}
       </ul>
-      <button onClick={handleSubmit} disabled={!selectedAnswer}>
-        Submit
-      </button>
-      {feedback && <p>{feedback}</p>}
-      <p>
-        Question {currentIndex + 1} of {questions.length}
-      </p>
+
+      <Button
+        size="lg"
+        variant="secondary"
+        onClick={handleSubmit}
+        disabled={!selectedAnswer}
+        className={`mt-6 py-2 px-4 w-full text-white font-semibold rounded-lg ${
+          selectedAnswer
+            ? "bg-green-500 hover:bg-green-600 border-green-800"
+            : "bg-gray-600 border-gray-800 cursor-not-allowed"
+        }`}
+      >
+        Get Started
+      </Button>
+
+      {feedback && (
+        <p className="mt-4 text-center text-xl font-semibold">{feedback}</p>
+      )}
+
+      <div className="mt-4 text-center">
+        <p>
+          Question {currentIndex + 1} of {questions.length}
+        </p>
+      </div>
     </div>
   );
 };
