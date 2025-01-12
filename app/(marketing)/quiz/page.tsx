@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface Question {
   id: number;
@@ -36,6 +37,9 @@ const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [score, setScore] = useState<number>(0);
+  const [answered, setAnswered] = useState<boolean>(false); // Track answer submission
+  const [loading, setLoading] = useState<boolean>(false); // Track loading state for next question
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -82,12 +86,27 @@ const Quiz = () => {
       setFeedback("Incorrect!");
     }
 
-    // Wait a bit before moving to the next question
+    setAnswered(true); // Mark the answer as submitted
+
+    // Wait before moving to the next question
+    setLoading(true); // Enable loading state while transitioning to the next question
     setTimeout(() => {
       setFeedback(null);
       setSelectedAnswer(null);
+      setAnswered(false); // Reset for the next question
       setCurrentIndex((prev) => prev + 1);
+      setLoading(false); // Disable loading state after question is changed
     }, 2000);
+  };
+
+  const handleBackToHome = () => {
+    const confirmNavigation = window.confirm(
+      "Are you sure you want to go home? Your progress will not be saved."
+    );
+
+    if (confirmNavigation) {
+      router.push("/"); // Navigate to home page
+    }
   };
 
   if (questions.length === 0) return <p>Loading...</p>;
@@ -99,73 +118,96 @@ const Quiz = () => {
         <p>
           Your score: {score}/{questions.length}
         </p>
+        <Button size="lg" variant="secondary" onClick={handleBackToHome}>
+          Go to Home
+        </Button>
       </div>
     );
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-lg">
-      {/* Progression Bar */}
-      <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-6">
-        <div
-          className="h-full bg-green-500"
-          style={{ width: `${((currentIndex + 1) / questions.length) * 100}%` }}
-        ></div>
-      </div>
-      {/* Questions and answers */}
-      <h1 className="text-3xl font-semibold text-center mb-6">
-        {currentQuestion.question}
-      </h1>
-      <ul className="grid grid-cols-2 gap-4">
-        {Object.entries(currentQuestion.answers).map(([key, answer]) => {
-          if (!answer) return null; // Skip null answers
-          return (
-            <li key={key} className="flex justify-center">
-              <label
-                htmlFor={key}
-                className={`block w-full p-4 text-center text-lg font-medium border rounded-lg cursor-pointer ${
-                  selectedAnswer === key
-                    ? "bg-green-500 text-white border-green-600"
-                    : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
-                }`}
-              >
-                <input
-                  type="radio"
-                  id={key}
-                  name="answer"
-                  value={key}
-                  checked={selectedAnswer === key}
-                  onChange={() => setSelectedAnswer(key)}
-                  className="hidden"
-                />
-                {answer}
-              </label>
-            </li>
-          );
-        })}
-      </ul>
-
-      <Button
-        size="lg"
-        variant="secondary"
-        onClick={handleSubmit}
-        disabled={!selectedAnswer}
-        className={`mt-6 py-2 px-4 w-full text-white font-semibold rounded-lg ${
-          selectedAnswer
-            ? "bg-green-500 hover:bg-green-600 border-green-800"
-            : "bg-gray-600 border-gray-800 cursor-not-allowed"
-        }`}
-      >
-        Get Started
+    <div>
+      <Button size="lg" variant="danger" onClick={handleBackToHome}>
+        Go to Home
       </Button>
+      <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-lg">
+        {/* Progression Bar */}
+        <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-6">
+          <div
+            className="h-full bg-green-500"
+            style={{
+              width: `${((currentIndex + 1) / questions.length) * 100}%`,
+            }}
+          ></div>
+        </div>
+        {/* Questions and answers */}
+        <h1 className="text-3xl font-semibold text-center mb-6">
+          {currentQuestion.question}
+        </h1>
+        <ul className="grid grid-cols-2 gap-4">
+          {Object.entries(currentQuestion.answers).map(([key, answer]) => {
+            if (!answer) return null; // Skip null answers
+            const isCorrect = selectedAnswer === key && feedback === "Correct!";
+            const isIncorrect =
+              selectedAnswer === key && feedback === "Incorrect!";
+            const isSubmitted = answered && !isCorrect && !isIncorrect;
+            const isSelected = selectedAnswer === key && !answered;
 
-      {feedback && (
-        <p className="mt-4 text-center text-xl font-semibold">{feedback}</p>
-      )}
+            return (
+              <li key={key} className="flex justify-center">
+                <label
+                  htmlFor={key}
+                  className={`block w-full p-4 text-center text-lg font-medium border rounded-lg cursor-pointer ${
+                    isCorrect
+                      ? "bg-green-500 text-white border-green-600"
+                      : isIncorrect
+                      ? "bg-red-500 text-white border-red-600"
+                      : isSelected
+                      ? "bg-gray-300 text-gray-700 border-gray-500"
+                      : isSubmitted
+                      ? "bg-gray-400 text-white border-gray-600"
+                      : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    id={key}
+                    name="answer"
+                    value={key}
+                    checked={selectedAnswer === key}
+                    onChange={() => setSelectedAnswer(key)}
+                    className="hidden"
+                    disabled={answered}
+                  />
+                  {answer}
+                </label>
+              </li>
+            );
+          })}
+        </ul>
 
-      <div className="mt-4 text-center">
-        <p>
-          Question {currentIndex + 1} of {questions.length}
-        </p>
+        <Button
+          size="lg"
+          variant="secondary"
+          onClick={handleSubmit}
+          disabled={!selectedAnswer || loading} // Disable button if no answer or loading
+          className={`mt-6 py-2 px-4 w-full text-white font-semibold rounded-lg ${
+            selectedAnswer && !loading
+              ? "bg-green-500 hover:bg-green-600 border-green-800"
+              : "bg-gray-600 border-gray-800 cursor-not-allowed"
+          }`}
+        >
+          Submit Answer
+        </Button>
+
+        {feedback && (
+          <p className="mt-4 text-center text-xl font-semibold">{feedback}</p>
+        )}
+
+        <div className="mt-4 text-center">
+          <p>
+            Question {currentIndex + 1} of {questions.length}
+          </p>
+        </div>
       </div>
     </div>
   );
