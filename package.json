@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "pages:build": "npx @cloudflare/next-on-pages",
-  "preview": "npm run pages:build && wrangler pages dev",
-  "deploy": "npm run pages:build && wrangler pages deploy"
+    "preview": "npm run pages:build && wrangler pages dev",
+    "deploy": "npm run pages:build && wrangler pages deploy"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
@@ -20,14 +20,17 @@
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.3",
     "firebase": "^11.1.0",
+    "inflight": "^1.0.6",
     "lucide-react": "^0.471.0",
-    "next": "14.2.16",
+    "next": "^14.2.23",
     "pg": "^8.13.1",
     "react": "^18",
     "react-circular-progressbar": "^2.1.0",
     "react-dom": "^18",
+    "rimraf": "^6.0.1",
     "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.7",
