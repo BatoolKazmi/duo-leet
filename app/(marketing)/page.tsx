@@ -13,7 +13,7 @@ export default function Home() {
       </div>
 
       {/* Wrap the Link component around the Button component */}
-      <Link href="/buttons">
+      <Link href="/dropdownmenu">
         <Button size="lg" variant="secondary" className="font-feather w-full">
           Get Started
         </Button>
