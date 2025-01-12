@@ -11,6 +11,9 @@ body {
     text-wrap: balance;
   }
 }
+.hidden {
+  display: none;
+}
 
 @layer base {
   :root {
