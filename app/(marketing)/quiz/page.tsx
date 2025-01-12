@@ -61,7 +61,7 @@ const Quiz = () => {
         }
 
         // Construct the API URL dynamically based on selected subject and difficulty
-        const apiUrl = `https://quizapi.io/api/v1/questions?apiKey=${apiKey}&category=${subject}&difficulty=${difficulty}&limit=10`;
+        const apiUrl = `https://quizapi.io/api/v1/questions?apiKey=${apiKey}&category=${subject}&difficulty=${difficulty}&limit=5`;
 
         console.log(apiUrl);
         const response = await axios.get<Question[]>(apiUrl);
@@ -110,13 +110,7 @@ const Quiz = () => {
   };
 
   const handleBackToHome = () => {
-    const confirmNavigation = window.confirm(
-      "Are you sure you want to go home? Your progress will not be saved."
-    );
-
-    if (confirmNavigation) {
-      router.push("/"); // Navigate to home page
-    }
+    router.push("/"); // Navigate to home page
   };
 
   if (questions.length === 0) return <p>Loading...</p>;
@@ -128,6 +122,15 @@ const Quiz = () => {
         <p>
           Your score: {score}/{questions.length}
         </p>
+        {/* Progress bar here showing the correct answers percentage */}
+        <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mt-6 mb-6">
+          <div
+            className="h-full bg-yellow-500"
+            style={{
+              width: `${(score / questions.length) * 100}%`,
+            }}
+          ></div>
+        </div>
         <Button size="lg" variant="secondary" onClick={handleBackToHome}>
           Go to Home
         </Button>
@@ -142,7 +145,7 @@ const Quiz = () => {
       <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-lg">
         <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-6">
           <div
-            className="h-full bg-green-500"
+            className="h-full bg-yellow-500"
             style={{
               width: `${((currentIndex + 1) / questions.length) * 100}%`,
             }}
@@ -195,13 +198,12 @@ const Quiz = () => {
 
         <Button
           size="lg"
-          variant="secondary"
           onClick={handleSubmit}
           disabled={!selectedAnswer || loading}
           className={`mt-6 py-2 px-4 w-full text-white font-semibold rounded-lg ${
             selectedAnswer && !loading
-              ? "bg-green-500 hover:bg-green-600 border-green-800"
-              : "bg-gray-600 border-gray-800 cursor-not-allowed"
+              ? "bg-yellow-500 hover:bg-yellow-600 border-yellow-800"
+              : "bg-gray-600 hover:bg-gray-800 border-gray-800 cursor-not-allowed"
           }`}
         >
           Submit Answer
