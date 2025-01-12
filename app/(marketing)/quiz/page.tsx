@@ -1,9 +1,11 @@
-"use client";
+"use client"; // Ensure client-side rendering
 
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Change to next/navigation
+import { useSearchParams } from "next/navigation"; // Import useSearchParams
+import React from "react";
 
 interface Question {
   id: number;
@@ -37,40 +39,49 @@ const Quiz = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [score, setScore] = useState<number>(0);
-  const [answered, setAnswered] = useState<boolean>(false); // Track answer submission
-  const [loading, setLoading] = useState<boolean>(false); // Track loading state for next question
+  const [answered, setAnswered] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const router = useRouter();
+  const searchParams = useSearchParams(); // Access the query parameters
+
+  const subject = searchParams.get("subject"); // Get 'subject' from query
+  const difficulty = searchParams.get("difficulty"); // Get 'difficulty' from query
 
   useEffect(() => {
+    if (!subject || !difficulty) return; // Ensure both parameters are available
+
     async function fetchQuestions() {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_QUIZ_API_KEY;
-        if (!apiUrl) {
+        const apiKey = process.env.NEXT_PUBLIC_API_KEY; // Your API key
+        if (!apiKey) {
           throw new Error(
-            "API URL is not defined in the environment variables."
+            "API Key is not defined in the environment variables."
           );
         }
 
+        // Construct the API URL dynamically based on selected subject and difficulty
+        const apiUrl = `https://quizapi.io/api/v1/questions?apiKey=${apiKey}&category=${subject}&difficulty=${difficulty}&limit=5`;
+
+        console.log(apiUrl);
         const response = await axios.get<Question[]>(apiUrl);
         setQuestions(response.data);
       } catch (error) {
         console.error("Error fetching quiz data:", error);
       }
     }
-    fetchQuestions();
-  }, []);
 
-  // Get current question
+    fetchQuestions();
+  }, [subject, difficulty]); // Re-fetch when subject or difficulty changes
+
   const currentQuestion = questions[currentIndex];
 
-  // Handle answer submission
   const handleSubmit = () => {
     if (!selectedAnswer) {
       alert("Please select an answer!");
       return;
     }
 
-    // Check if the selected answer is correct
     const correctKey = Object.keys(currentQuestion.correct_answers).find(
       (key) =>
         currentQuestion.correct_answers[
@@ -86,27 +97,20 @@ const Quiz = () => {
       setFeedback("Incorrect!");
     }
 
-    setAnswered(true); // Mark the answer as submitted
+    setAnswered(true);
 
-    // Wait before moving to the next question
-    setLoading(true); // Enable loading state while transitioning to the next question
+    setLoading(true);
     setTimeout(() => {
       setFeedback(null);
       setSelectedAnswer(null);
-      setAnswered(false); // Reset for the next question
+      setAnswered(false);
       setCurrentIndex((prev) => prev + 1);
-      setLoading(false); // Disable loading state after question is changed
+      setLoading(false);
     }, 2000);
   };
 
   const handleBackToHome = () => {
-    const confirmNavigation = window.confirm(
-      "Are you sure you want to go home? Your progress will not be saved."
-    );
-
-    if (confirmNavigation) {
-      router.push("/"); // Navigate to home page
-    }
+    router.push("/"); // Navigate to home page
   };
 
   if (questions.length === 0) return <p>Loading...</p>;
@@ -118,6 +122,15 @@ const Quiz = () => {
         <p>
           Your score: {score}/{questions.length}
         </p>
+        {/* Progress bar here showing the correct answers percentage */}
+        <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mt-6 mb-6">
+          <div
+            className="h-full bg-yellow-500"
+            style={{
+              width: `${(score / questions.length) * 100}%`,
+            }}
+          ></div>
+        </div>
         <Button size="lg" variant="secondary" onClick={handleBackToHome}>
           Go to Home
         </Button>
@@ -130,22 +143,20 @@ const Quiz = () => {
         Go to Home
       </Button>
       <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-lg">
-        {/* Progression Bar */}
         <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-6">
           <div
-            className="h-full bg-green-500"
+            className="h-full bg-yellow-500"
             style={{
               width: `${((currentIndex + 1) / questions.length) * 100}%`,
             }}
           ></div>
         </div>
-        {/* Questions and answers */}
         <h1 className="text-3xl font-semibold text-center mb-6">
           {currentQuestion.question}
         </h1>
         <ul className="grid grid-cols-2 gap-4">
           {Object.entries(currentQuestion.answers).map(([key, answer]) => {
-            if (!answer) return null; // Skip null answers
+            if (!answer) return null;
             const isCorrect = selectedAnswer === key && feedback === "Correct!";
             const isIncorrect =
               selectedAnswer === key && feedback === "Incorrect!";
@@ -187,13 +198,12 @@ const Quiz = () => {
 
         <Button
           size="lg"
-          variant="secondary"
           onClick={handleSubmit}
-          disabled={!selectedAnswer || loading} // Disable button if no answer or loading
+          disabled={!selectedAnswer || loading}
           className={`mt-6 py-2 px-4 w-full text-white font-semibold rounded-lg ${
             selectedAnswer && !loading
-              ? "bg-green-500 hover:bg-green-600 border-green-800"
-              : "bg-gray-600 border-gray-800 cursor-not-allowed"
+              ? "bg-yellow-500 hover:bg-yellow-600 border-yellow-800"
+              : "bg-gray-600 hover:bg-gray-800 border-gray-800 cursor-not-allowed"
           }`}
         >
           Submit Answer
